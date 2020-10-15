@@ -14,6 +14,7 @@ ax1.grid()
 ax2.grid()
 
 line, = ax1.plot([], [], 'o-', lw=1)
+point, = ax2.plot([],[], 'ro')
 
 theta_0 = pi/8      #the method used in this program is only valid for theta_0 << 1 [rad]
 g = 9.81
@@ -39,15 +40,18 @@ cs = ax2.contour(Theta, Theta_dot, Hamiltonian(q,p))
 
 def calculate_position(t):
     theta = theta_0 * cos(omega * t)            # valid for small angles
+    theta_dot = -theta_0 * omega * sin(omega * t)
     xData = [origin[0], L * sin(theta)]
     yData = [origin[1], -L * cos(theta)]
-    return xData, yData
+    return theta, theta_dot, xData, yData
 
 def animate(i):
     global t_elapsed
     t_elapsed += dt
-    line.set_data(calculate_position(t_elapsed))   
-    return line, 
+    theta, theta_dot, x, y = calculate_position(t_elapsed)
+    line.set_data(x, y)   
+    point.set_data(theta, theta_dot)
+    return line, point,
 
 t0 = time()
 print(t_elapsed)
