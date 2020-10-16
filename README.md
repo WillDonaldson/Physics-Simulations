@@ -1,7 +1,6 @@
 # Physics-Simulations
 Fun projects, mostly for personal practice
 
-Documentation
+simple-pendulum.py
 
-pendulum-small-angle.py
-A simulation of the classic mechanics problem. Solved using the small angle approximation. 
+A simulation of the classic mechanics problem. Pendulum is made of a rod with uniform mass, Hamiltonian used to construct assosiated phase-space plot. Derivation of equations can be found on my blog post: 
