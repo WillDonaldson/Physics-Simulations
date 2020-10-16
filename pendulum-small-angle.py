@@ -1,7 +1,9 @@
 # notes to self
 # come back and add in option for rod with non-zero mass
 # cleanup seperate function for phase space data
-# repair timing issue introduced by t_span
+# user input for IC, and type of pendulum: simple, rod, compound, add in dampening?
+# double pendulum case
+# above features are more physics than programming practice, so I may omit them for now
 
 import numpy as np
 from time import time
@@ -39,33 +41,29 @@ def Hamiltonian(q, p):
     H = p**2 / (2*m*L**2) + m*g*L*(1-np.cos(q))
     return H
 
-# create points for plotting
-x = np.arange(-2*np.pi, 2*np.pi, 0.05)
-y = np.arange(-10, 10, 0.05)
-Theta, Theta_dot = np.meshgrid(x, y)            # poor notation, needs renaming. This variable is different to the theta in calculate_position()
-q = Theta
-p = m * L**2 * Theta_dot
-cs = ax2.contour(Theta, Theta_dot, Hamiltonian(q,p))
-ts = np.linspace(t_span[0], t_span[1], frames)
-
 def eqn(t, theta_0):
     # f = [theta, theta_dot]
     # returns f'
     return [theta_0[1], -omega**2 * np.sin(theta_0[0])]
 
+ts = np.linspace(t_span[0], t_span[1], frames)
 pendulum_state = solve_ivp(eqn, t_span, theta_0, t_eval = ts)
 
-def calculate_position(i):
-    #theta = theta_0 * cos(np.omega * t)            # valid for small angles, theta_0 << 1 [rad]
-    #theta_dot = -theta_0[0] * omega * np.sin(omega * t) + theta_0[1]
-    theta = pendulum_state.y[0][i]
-    theta_dot = pendulum_state.y[1][i] 
-    xData = [origin[0], L * np.sin(theta)]
-    yData = [origin[1], -L * np.cos(theta)]
-    return theta, theta_dot, xData, yData
+# phase space data points
+# this code snippet could be refactored in terms of pendulum_state.y[][]
+# elected to keep using np.meshgrid() for ease of readability
+x = np.linspace(-2*np.pi, 2*np.pi, frames)
+y = np.linspace(-10, 10, frames)
+ThetaGrid, Theta_dotGrid = np.meshgrid(x, y)            
+q = ThetaGrid
+p = m * L**2 * Theta_dotGrid            # conjugate momementum 
+cs = ax2.contour(ThetaGrid, Theta_dotGrid, Hamiltonian(q,p))
 
 def animate(i):
-    theta, theta_dot, x, y = calculate_position(i)
+    theta = pendulum_state.y[0][i]
+    theta_dot = pendulum_state.y[1][i] 
+    x = [origin[0], L * np.sin(theta)]
+    y = [origin[1], -L * np.cos(theta)]
     line.set_data(x, y)   
     point.set_data(theta, theta_dot)
     return line, point,
