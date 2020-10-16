@@ -9,26 +9,30 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from scipy.integrate import solve_ivp
 
+# setup plots
 fig = plt.figure()
 ax1 = fig.add_subplot(121, aspect='equal', xlim = (-1, 1), ylim = (-1.5, 0.5), title = "Pendulum Animation")
 ax2 = fig.add_subplot(122, xlim = (-2*np.pi, 2*np.pi), ylim = (-10, 10), title = "Phase Space Plot")
 ax2.set_xlabel(r"$\Theta$[rad]")
 ax2.set_ylabel(r"$\dot{\Theta}$[rad/s]")
-
 ax1.grid()
 ax2.grid()
 
 line, = ax1.plot([], [], 'o-', lw=1)    # pendulum arm 
 point, = ax2.plot([],[], 'ro')          # position in phase space
 
-theta_0 = [np.pi/8, 0]                  # theta_0[1] = initial angular velocity
+# pendulum parameters
+theta_0 = [np.pi/8, 0.0]                # theta_0[1] = initial angular velocity
 g = 9.81
 L = 1.0
 m = 1.0
 omega = np.sqrt(g/L)
-origin = (0,0)
+
+# animation parameters
+origin = [0.0, 0.0]
 dt = 0.05
-t_span = [0,30]
+frames = 600
+t_span = [0.0, frames * dt]
 
 def Hamiltonian(q, p):
     # calculates the Hamiltonian of a simple pendulum
@@ -42,7 +46,7 @@ Theta, Theta_dot = np.meshgrid(x, y)            # poor notation, needs renaming.
 q = Theta
 p = m * L**2 * Theta_dot
 cs = ax2.contour(Theta, Theta_dot, Hamiltonian(q,p))
-ts = np.linspace(t_span[0], t_span[1], 600)
+ts = np.linspace(t_span[0], t_span[1], frames)
 
 def eqn(t, theta_0):
     # f = [theta, theta_dot]
@@ -67,9 +71,9 @@ def animate(i):
     return line, point,
 
 t0 = time()
-animate(0)                          #sample time to evaluate function
+animate(0)                          #sample time required to evaluate function
 t1 = time()
 interval = 1000 * dt - (t1 - t0)
 
-ani = animation.FuncAnimation(fig, animate, frames = 100, interval = interval)
+ani = animation.FuncAnimation(fig, animate, frames = frames, interval = interval)
 plt.show()
