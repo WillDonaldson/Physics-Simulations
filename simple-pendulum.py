@@ -37,7 +37,7 @@ frames = 600
 t_span = [0.0, frames * dt]
 
 def Hamiltonian(q, p):
-    H = p**2 / (6*m*L**2) + m*g*L*(1-np.cos(q))
+    H = p**2 / (6*m*L**2) + m*g*L/2*(1-np.cos(q))
     return H
 
 def eqn(t, theta_0):
